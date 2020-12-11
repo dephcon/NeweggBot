@@ -5,6 +5,12 @@ const log4js = require("log4js")
 const logger = log4js.getLogger("Newegg Shopping Bot")
 logger.level = "trace"
 
+/** 
+ * This value will set the ceiling on the random number of seconds to be added to the **refresh_time**.
+ * To override the default value (11), set the randomized_wait_ceiling variable in the config.json.
+ */ 
+var randomizedWaitCeiling = config.randomized_wait_ceiling | 11;
+
 async function check_cart(page) {
 	await page.waitForTimeout(250)
 	const amountElementName = ".summary-content-total"
@@ -37,7 +43,9 @@ async function check_cart(page) {
 		return true
 	} catch (err) {
 		logger.error(err.message)
-		await page.waitForTimeout(config.refresh_time * 1000)
+		var nextCheckInSeconds = config.refresh_time + Math.floor(Math.random() * Math.floor(randomizedWaitCeiling))
+		logger.info(`The next attempt will be performed in ${nextCheckInSeconds} seconds`)
+		await page.waitForTimeout(nextCheckInSeconds * 1000)
 		return false
 	}
 }
@@ -47,13 +55,13 @@ async function run() {
 	logger.info("Newegg Shopping Bot Started")
 	const browser = await puppeteer.launch({
 		headless: false,
-		product: 'firefox',
-		defaultViewport: { width: 1366, height: 768 }
+		defaultViewport: { width: 1920, height: 1080 },
+		executablePath: config.browser_executable_path
 	})
 	const page = await browser.newPage()
-
+	await page.setCacheEnabled(false)
 	while (true) {
-		await page.goto('https://secure.newegg.com/NewMyAccount/AccountLogin.aspx?nextpage=https%3a%2f%2fwww.newegg.com%2f', { waitUntil: 'load' })
+		await page.goto('https://secure.newegg.com/NewMyAccount/AccountLogin.aspx', { waitUntil: 'networkidle0' })
 		if (page.url().includes('signin')) {
 			await page.waitForSelector('button.btn.btn-orange')
 			await page.type('#labeled-input-signEmail', config.email)
@@ -91,7 +99,7 @@ async function run() {
 
 	while (true) {
 		try {
-			await page.goto('https://secure.newegg.com/Shopping/AddtoCart.aspx?Submit=ADD&ItemList=' + config.item_number, { waitUntil: 'load' })
+			await page.goto('https://secure.newegg.com/Shopping/AddtoCart.aspx?Submit=ADD&ItemList=' + config.item_number, { waitUntil: 'networkidle0' })
 			if (page.url().includes("cart")) {
 				if (await check_cart(page)) {
 					break

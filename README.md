@@ -1,11 +1,11 @@
 # NeweggBot
-Autonomously buy GPUs from Newegg as soon as they become available
+Autonomously buy products from Newegg as soon as they become available
 
 This bot is very much still in the early stages, and more than a little rough around the edges.  Expect the occasional hiccups if you decide to use it.
 
 ## Installation
 You will require [Node.js 14](https://nodejs.org/en/) to run this.
-After installing via git or by downloading the code and extracting it, navigate to the folder where the files are located via powershell(or equivalent console) and run `npm run do-install` script.  If you end up experiencing the error `Error: Could not find browser revision latest` when running, you may also need to run the command `PUPPETEER-PRODUCT=firefox npm i puppeteer`.
+After installing via git or by downloading the code and extracting it, navigate to the folder where the files are located via powershell(or equivalent console) and run `npm install` command.  If you end up experiencing the error `Error: Could not find browser revision latest` when running, you may also need to run the command `PUPPETEER-PRODUCT=firefox npm i puppeteer`.
 
 
 ## Configuration
@@ -16,6 +16,8 @@ Once that is finished, create a copy of config_template.json and name it config.
 - `auto_submit` refers to whether or not you want the bot to complete the checkout process.  Setting it to 'true' will result in the bot completing the purchase, while 'false' will result in it completing all the steps up to but not including finalizing the purchase.  It is mostly intended as a means to test that the bot is working without actually having it buy something.
 - `price_limit` refers to the maximum price that the bot will attempt to purchase a card for.  It is based on the combined subtotal of your cart. 
 - `over_price_limit_behavior` Defines the behavior for cases in which the cart total exceeds the specified `price_limit`. Currently, the only valid value is *"stop"*. This will instruct the bot to end the process when the cart is over the limit. The option was added as a string, as opposed to a boolean, to allow some flexibility for  other potential actions. 
+- `randomized_wait_ceiling` This value will set the ceiling on the random number of seconds to be added to the **refresh_time**. While not guaranteed, this should help to prevent - or at least delay - IP bans based on consistent traffic/timing. 
+- `browser_executable_path` This will set the path to the browser to be used by the bot. Depending on the browser selected, you *may* need to install additional packages.
 
 ## Usage
 After installation and configuration, the bot can then be run by using either `node neweggbot.js` or the `npm start` script. 
