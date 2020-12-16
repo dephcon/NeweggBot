@@ -4,7 +4,7 @@
 	"cv2":"123",
 	"refresh_time": 5,
 	"item_number":"N82E16814137595,N82E16814126455",
-	"auto_submit":"true",
+	"auto_submit":true,
 	"price_limit":"800",
 	"over_price_limit_behavior": "stop",
 	"randomized_wait_ceiling": 11,
